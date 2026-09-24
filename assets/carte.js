@@ -165,15 +165,18 @@
   function construireCarte() {
     carte = L.map("carte", { zoomSnap: 0.5, minZoom: 4.5, maxZoom: 12, preferCanvas: false });
     fonds = {
-      clair: L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
-        subdomains: "abcd", maxZoom: 19,
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>' }),
+      clair: L.layerGroup([
+        L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}", {
+          maxNativeZoom: 16, maxZoom: 19, attribution: "Fond de carte &copy; Esri" }),
+        L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}", {
+          maxNativeZoom: 16, maxZoom: 19, pane: "etiquettes" }),
+      ]),
       osm: L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
         maxZoom: 19, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">contributeurs OpenStreetMap</a>' }),
       satellite: L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
         maxZoom: 18, attribution: "Imagerie &copy; Esri, Maxar, Earthstar Geographics" }),
     };
-    [["donnees", 410], ["limites", 420], ["fleuves", 430]].forEach(([nom, z]) => {
+    [["donnees", 410], ["limites", 420], ["fleuves", 430], ["etiquettes", 440]].forEach(([nom, z]) => {
       const p = carte.createPane(nom); p.style.zIndex = z;
       if (nom !== "donnees") p.style.pointerEvents = "none";
     });
@@ -226,17 +229,38 @@
     carte.addControl(new Accueil());
     L.control.scale({ imperial: false, position: "bottomright" }).addTo(carte);
 
+    const erreurs = {};
+    Object.entries(fonds).forEach(([nom, couche]) => {
+      const tuiles = couche instanceof L.LayerGroup ? couche.getLayers() : [couche];
+      tuiles.forEach((t) => t.on("tileerror", () => {
+        erreurs[nom] = (erreurs[nom] || 0) + 1;
+        if (erreurs[nom] === 8 && S.fond === nom && nom !== "osm") {
+          console.warn(`Fond « ${nom} » indisponible : bascule sur OpenStreetMap.`);
+          changerFond("osm");
+        }
+      }));
+    });
+
     vueInitiale = couches.unites.getBounds().pad(0.04);
     carte.setMaxBounds(vueInitiale.pad(0.8));
     carte.fitBounds(vueInitiale);
+    // Vue d'ensemble par régions ; les unités de niveau 2 apparaissent dès le premier zoom
+    S.zoomUnites = Math.max(6, carte.getZoom() + 1);
     fonds[S.fond].addTo(carte);
+  }
+
+  function changerFond(nom) {
+    if (carte.hasLayer(fonds[S.fond])) carte.removeLayer(fonds[S.fond]);
+    S.fond = nom; fonds[nom].addTo(carte);
+    document.querySelectorAll('input[name="c-fond"]').forEach((i) => (i.checked = i.value === nom));
+    styler(); ecrireHash();
   }
 
   function vueEnsemble() { carte.fitBounds(vueInitiale); }
 
   function niveauAffiche() {
     if (S.ref.manifeste.mode === "regions") return "regions";
-    if (S.echelle === "auto") return carte.getZoom() >= ZOOM_UNITES ? "unites" : "regions";
+    if (S.echelle === "auto") return carte.getZoom() >= (S.zoomUnites || ZOOM_UNITES) ? "unites" : "regions";
     return S.echelle;
   }
 
@@ -313,7 +337,11 @@
     if (niveau === "region" && S.echelle === "auto" && S.ref.manifeste.mode !== "regions") {
       const couche = couches.regions.getLayers().find((l) => l.feature.properties.code === code);
       S.selection = { niveau, code };
-      if (couche) carte.fitBounds(couche.getBounds(), { maxZoom: 8, padding: [20, 20] });
+      if (couche) {
+        const b = couche.getBounds();
+        const z = Math.max(carte.getBoundsZoom(b, false, L.point(40, 40)), S.zoomUnites || ZOOM_UNITES);
+        carte.setView(b.getCenter(), Math.min(z, 10));
+      }
     } else {
       S.selection = { niveau, code };
     }
@@ -670,7 +698,7 @@
       const t = e.target;
       if (t.name === "c-echelle") { S.echelle = t.value; rafraichir(); }
       else if (t.name === "c-fond") {
-        carte.removeLayer(fonds[S.fond]); S.fond = t.value; fonds[S.fond].addTo(carte); styler(); ecrireHash();
+        changerFond(t.value);
       } else if (t.id && t.id.startsWith("c-") && t.type === "checkbox") {
         S.couches[t.id.slice(2)] = t.checked; afficherCouches(); rendreLegende(); ecrireHash();
       }
@@ -806,7 +834,7 @@
       <h3>Sources et licences</h3>
       <ul>
         <li>Limites administratives : ${E(M.source_limites)}. Frontières des pays, cours d'eau et localités : Natural Earth (domaine public).</li>
-        <li>Fonds de carte : contributeurs OpenStreetMap, CARTO, Esri.</li>
+        <li>Fonds de carte : Esri (plan clair et image satellite), contributeurs OpenStreetMap.</li>
         <li>Bibliothèques : Leaflet, Chart.js, Papa Parse, SheetJS. Police : Atkinson Hyperlegible (Braille Institute).</li>
         <li>Données mises à jour le ${E(M.genere_le)}.</li>
       </ul>

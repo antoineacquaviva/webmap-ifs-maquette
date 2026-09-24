@@ -106,9 +106,10 @@ a { color: var(--fleuve); }
 /* ---------- Filtres */
 .filtres-tete {
   position: sticky; top: 0; z-index: 2; background: var(--surface);
-  display: flex; align-items: baseline; justify-content: space-between; gap: .5rem;
+  display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .15rem .75rem;
   padding: 1rem 1rem .75rem; border-bottom: 1px solid var(--trait);
 }
+.filtres-tete h2, .filtres-tete .compteur { white-space: nowrap; }
 .filtres-tete h2 { font-size: var(--t-m); margin: 0; }
 .compteur { font-size: var(--t-s); color: var(--encre-douce); }
 .compteur strong { color: var(--encre); font-size: var(--t-m); }
