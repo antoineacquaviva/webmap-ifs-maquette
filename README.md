@@ -68,7 +68,7 @@ Les navigateurs bloquent la lecture des fichiers de données quand on ouvre `ind
 
 - Limites administratives : [geoBoundaries](https://www.geoboundaries.org), licence CC BY 4.0.
 - Frontières, cours d'eau, localités : [Natural Earth](https://www.naturalearthdata.com), domaine public.
-- Fonds de carte : contributeurs OpenStreetMap (ODbL), CARTO, Esri.
+- Fonds de carte : Esri (plan clair, satellite), contributeurs OpenStreetMap (ODbL).
 - Bibliothèques : Leaflet (BSD-2-Clause), Chart.js et Papa Parse (MIT), SheetJS (Apache-2.0). Police Atkinson Hyperlegible (SIL OFL 1.1).
 - Code de la maquette : licence MIT, © 2026 Antoine Acquaviva. Il est librement réutilisable par l'IFS.
 
