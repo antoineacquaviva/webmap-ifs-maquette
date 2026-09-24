@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Carte des actions de l'Initiative Fleuve Sénégal (maquette)</title>
+  <meta name="description" content="Carte interactive des projets menés par les membres de l'Initiative Fleuve Sénégal et leurs partenaires au Sénégal, en Mauritanie, au Mali et en Guinée (2021-2026). Maquette de démonstration, données fictives.">
+  <meta property="og:title" content="Carte des actions de l'Initiative Fleuve Sénégal">
+  <meta property="og:description" content="Qui agit, où et sur quoi dans le bassin du fleuve Sénégal. Maquette de démonstration.">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#17507A">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23EFE6C8'/%3E%3Cpath d='M3 20c5-6 9 2 13-3s8-2 13-7' stroke='%2317507A' stroke-width='4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="assets/vendor/leaflet.css">
+  <link rel="stylesheet" href="assets/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"Dataset","name":"Actions de l'Initiative Fleuve Sénégal 2021-2026 (maquette)","description":"Projets des membres de l'IFS par unité administrative dans le bassin du fleuve Sénégal. Données fictives de démonstration.","spatialCoverage":"Bassin du fleuve Sénégal : Sénégal, Mauritanie, Mali, Guinée","temporalCoverage":"2021/2026","inLanguage":"fr"}
+  </script>
+</head>
+<body class="page-carte">
+  <header class="bandeau">
+    <div class="marque">
+      <h1>Initiative Fleuve Sénégal</h1>
+      <p>Qui agit, où et sur quoi dans le bassin du fleuve Sénégal (2021-2026)</p>
+    </div>
+    <span class="pastille-fictif" title="Les projets affichés sont inventés pour la démonstration">Données fictives</span>
+    <nav>
+      <button class="bouton discret" type="button" id="ouvrir-apropos">À propos<span class="long">&nbsp;de la carte</span></button>
+      <a class="bouton" href="admin.html">Mettre à jour<span class="long">&nbsp;les données</span></a>
+    </nav>
+  </header>
+  <div class="bandeau-info masque" id="info-import" role="status"></div>
+
+  <main class="espace">
+    <aside class="volet volet-filtres" id="filtres" aria-label="Filtres">
+      <div class="filtres-tete">
+        <h2>Filtrer les projets</h2>
+        <span class="compteur" aria-live="polite"><strong id="nb-filtres">–</strong> <span id="nb-total"></span></span>
+        <button class="bouton discret filtres-fermer" type="button" id="fermer-filtres">Voir la carte</button>
+      </div>
+
+      <details class="groupe" open>
+        <summary>Territoire <span class="actif-nb" id="actif-territoire"></span></summary>
+        <div class="contenu">
+          <div id="f-pays" class="contenu" role="group" aria-label="Pays"></div>
+          <label class="champ"><span>Région</span><select id="f-region"></select></label>
+          <label class="champ"><span>Unité administrative (niveau 2)</span><select id="f-unite"></select></label>
+        </div>
+      </details>
+      <details class="groupe" open>
+        <summary>Thématique <span class="actif-nb" id="actif-theme"></span></summary>
+        <div class="contenu" id="f-theme" role="group" aria-label="Thématiques"></div>
+      </details>
+      <details class="groupe">
+        <summary>Organisation membre <span class="actif-nb" id="actif-org"></span></summary>
+        <div class="contenu" id="f-org" role="group" aria-label="Organisations"></div>
+      </details>
+      <details class="groupe">
+        <summary>Bailleur et partenaire <span class="actif-nb" id="actif-acteurs"></span></summary>
+        <div class="contenu">
+          <label class="champ"><span>Bailleur</span><select id="f-bailleur"></select></label>
+          <label class="champ"><span>Partenaire</span><select id="f-partenaire"></select></label>
+        </div>
+      </details>
+      <details class="groupe" open>
+        <summary>État et période <span class="actif-nb" id="actif-periode"></span></summary>
+        <div class="contenu">
+          <div class="segmente" role="group" aria-label="État du projet" id="f-etat">
+            <button type="button" data-etat="" aria-pressed="true">Tous</button>
+            <button type="button" data-etat="en_cours" aria-pressed="false">En cours</button>
+            <button type="button" data-etat="termine" aria-pressed="false">Terminés</button>
+          </div>
+          <div class="deux-champs">
+            <label class="champ"><span>Actifs de</span><select id="f-de"></select></label>
+            <label class="champ"><span>à</span><select id="f-a"></select></label>
+          </div>
+        </div>
+      </details>
+      <div class="filtres-pied">
+        <button class="bouton" type="button" id="reinitialiser">Effacer les filtres</button>
+        <button class="bouton discret" type="button" id="copier-lien">Copier le lien de cette vue</button>
+      </div>
+    </aside>
+
+    <section class="zone-carte" aria-label="Carte">
+      <div id="carte"></div>
+      <div class="outils-gauche">
+        <button class="bouton bouton-filtres" type="button" id="ouvrir-filtres" aria-controls="filtres">Filtres <span id="nb-filtres-actifs"></span></button>
+      </div>
+      <div class="outils-carte">
+        <button class="bouton" type="button" id="bouton-couches" aria-expanded="false" aria-controls="carte-couches">Couches et fond de carte</button>
+        <div class="carte-couches masque" id="carte-couches">
+          <fieldset>
+            <legend>Indicateur représenté</legend>
+            <select id="c-indicateur" aria-label="Indicateur représenté">
+              <option value="projets">Nombre de projets</option>
+              <option value="organisations">Nombre d'organisations membres</option>
+              <option value="partenaires">Nombre de partenaires</option>
+              <option value="bailleurs">Nombre de bailleurs</option>
+              <option value="beneficiaires">Bénéficiaires (estimation)</option>
+            </select>
+          </fieldset>
+          <fieldset>
+            <legend>Échelle d'agrégation</legend>
+            <label class="case"><input type="radio" name="c-echelle" value="auto" checked> Selon le zoom</label>
+            <label class="case"><input type="radio" name="c-echelle" value="regions"> Régions</label>
+            <label class="case"><input type="radio" name="c-echelle" value="unites"> Unités de niveau 2</label>
+          </fieldset>
+          <fieldset>
+            <legend>Couches</legend>
+            <label class="case"><input type="checkbox" id="c-donnees" checked> Projets 2021-2026 par territoire</label>
+            <label class="case"><input type="checkbox" id="c-historique"> Projets 2010-2020 (Traverse n°50)</label>
+            <label class="case"><input type="checkbox" id="c-fleuves" checked> Fleuve et affluents</label>
+            <label class="case"><input type="checkbox" id="c-regions" checked> Limites des régions</label>
+            <label class="case"><input type="checkbox" id="c-pays" checked> Frontières des pays</label>
+          </fieldset>
+          <fieldset>
+            <legend>Fond de carte</legend>
+            <label class="case"><input type="radio" name="c-fond" value="clair" checked> Plan clair</label>
+            <label class="case"><input type="radio" name="c-fond" value="osm"> OpenStreetMap</label>
+            <label class="case"><input type="radio" name="c-fond" value="satellite"> Image satellite</label>
+          </fieldset>
+        </div>
+      </div>
+      <div class="legende" id="legende" aria-live="polite"></div>
+      <a class="bouton lien-plein-ecran masque" id="plein-ecran" target="_blank" rel="noopener">Ouvrir la carte complète</a>
+    </section>
+
+    <aside class="volet volet-infos" aria-label="Informations">
+      <div class="onglets" role="tablist">
+        <button type="button" role="tab" id="onglet-synthese" aria-selected="true" aria-controls="panneau-synthese">Synthèse</button>
+        <button type="button" role="tab" id="onglet-detail" aria-selected="false" aria-controls="panneau-detail">Territoire et projets</button>
+      </div>
+      <div class="panneau" id="panneau-synthese" role="tabpanel" aria-labelledby="onglet-synthese"></div>
+      <div class="panneau masque" id="panneau-detail" role="tabpanel" aria-labelledby="onglet-detail"></div>
+    </aside>
+  </main>
+
+  <dialog class="apropos" id="apropos" aria-labelledby="apropos-titre">
+    <div class="apropos-tete">
+      <h2 id="apropos-titre">À propos de cette carte</h2>
+      <button class="bouton" type="button" id="fermer-apropos">Fermer</button>
+    </div>
+    <div class="apropos-corps" id="apropos-corps"></div>
+  </dialog>
+
+  <noscript>
+    <p style="padding:1rem">Cette carte interactive nécessite JavaScript. Elle présente les projets des membres de l'Initiative Fleuve Sénégal (Ados, AVSF, Geres, Grdr, Gret, Le Partenariat) au Sénégal, en Mauritanie, au Mali et en Guinée.</p>
+  </noscript>
+
+  <script src="assets/vendor/leaflet.js"></script>
+  <script src="assets/vendor/papaparse.min.js"></script>
+  <script src="assets/vendor/chart.umd.min.js"></script>
+  <script src="assets/commun.js"></script>
+  <script src="assets/carte.js"></script>
+</body>
+</html>

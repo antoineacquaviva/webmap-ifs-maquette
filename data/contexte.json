@@ -1,0 +1,14 @@
+{
+  "titre": "Initiative Fleuve Sénégal",
+  "sous_titre": "Qui agit, où et sur quoi dans le bassin du fleuve Sénégal (2021-2026)",
+  "avertissement": "Maquette de démonstration. Les projets, bailleurs, partenaires, montants et la couche historique sont fictifs. Les limites administratives, les cours d'eau et les localités sont réels.",
+  "ifs": "L'Initiative Fleuve Sénégal (IFS) est un cadre de concertation créé par six associations de solidarité internationale françaises qui interviennent toutes dans le bassin du fleuve Sénégal : Ados, AVSF, Geres, Grdr, Gret et Le Partenariat. Elles partagent un ancrage de plus de 30 ans dans la vallée, un réseau dense d'acteurs locaux et des approches adaptées à chaque territoire.",
+  "bassin": "Le bassin du fleuve Sénégal s'étend sur quatre pays : la Guinée, où le fleuve prend sa source dans le Fouta-Djalon, le Mali, la Mauritanie et le Sénégal. La webmap couvre les régions et les unités administratives de niveau 2 (départements, moughataas, cercles, préfectures) où interviennent les membres de l'IFS.",
+  "methode": [
+    "Un projet présent dans plusieurs unités est compté dans chacune d'elles, mais une seule fois à l'échelle d'une région ou du bassin.",
+    "Les bénéficiaires d'un projet sont répartis à parts égales entre ses unités d'intervention. Cette règle est provisoire et sera arrêtée au cadrage.",
+    "Un projet est retenu dans une période s'il est actif au moins une année de cette période.",
+    "Les thématiques affichées sont une nomenclature provisoire, à caler sur les 8 thématiques du Traverse n°50 et les 2 entrées transversales."
+  ],
+  "auteur": "Maquette réalisée par Antoine Acquaviva, avec l'aide d'un assistant d'IA (Claude, d'Anthropic), pour la réponse à l'appel d'offres de l'IFS. Chaque élément a été relu et vérifié."
+}

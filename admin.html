@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mettre à jour les données de la carte (démonstration)</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#17507A">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23EFE6C8'/%3E%3Cpath d='M3 20c5-6 9 2 13-3s8-2 13-7' stroke='%2317507A' stroke-width='4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body class="page-admin">
+  <header class="bandeau">
+    <div class="marque">
+      <h1>Initiative Fleuve Sénégal</h1>
+      <p>Espace de mise à jour des données</p>
+    </div>
+    <span class="pastille-fictif">Démonstration</span>
+    <nav><a class="bouton" href="index.html">Retour à la carte</a></nav>
+  </header>
+
+  <main class="admin">
+    <header>
+      <h2>Mettre à jour la carte avec un export Kobo</h2>
+      <p>Trois étapes, sans compétence technique : déposer le fichier exporté de Kobo, lire le rapport de contrôle, publier.
+        Dans cette démonstration, rien ne quitte votre ordinateur : le fichier est lu et contrôlé dans votre navigateur.</p>
+    </header>
+
+    <section class="etape" id="etape-1" aria-labelledby="t1">
+      <h3 id="t1"><span class="num">1</span>Déposer l'export Kobo</h3>
+      <p>Dans Kobo, ouvrez le formulaire, puis Données, Téléchargements, et choisissez le format Excel ou CSV avec les noms de colonnes « XML ».</p>
+      <div class="depot" id="depot">
+        <strong>Glissez le fichier ici</strong>
+        <small>Formats acceptés : .xlsx, .xls, .csv</small>
+        <label class="bouton principal" for="fichier">Choisir un fichier</label>
+        <input class="visuellement-masque" type="file" id="fichier" accept=".xlsx,.xls,.csv,text/csv">
+      </div>
+      <div class="actions" style="margin-top:.8rem">
+        <button class="bouton" type="button" id="essayer-exemple">Essayer avec un export d'exemple</button>
+        <a class="bouton discret" href="data/modele_import.csv" download>Télécharger le modèle de fichier</a>
+        <a class="bouton discret" href="data/referentiels/unites.csv" download>Liste des codes des unités</a>
+      </div>
+      <p class="aide">L'export d'exemple contient 5 nouveaux projets, 2 projets modifiés et 5 lignes avec des erreurs volontaires : 3 bloquantes et 2 simples avertissements, publiées quand même.</p>
+      <div id="message-lecture" role="status"></div>
+    </section>
+
+    <section class="etape inactive" id="etape-2" aria-labelledby="t2">
+      <h3 id="t2"><span class="num">2</span>Lire le rapport de contrôle</h3>
+      <p>Chaque ligne est vérifiée : identifiants, organisation, unités administratives, années, thématiques, chiffres.
+        Les lignes bloquées ne sont pas publiées ; le reste de la carte est mis à jour normalement.</p>
+      <div id="rapport"><p class="aide">Le rapport s'affichera ici après le dépôt d'un fichier.</p></div>
+    </section>
+
+    <section class="etape inactive" id="etape-3" aria-labelledby="t3">
+      <h3 id="t3"><span class="num">3</span>Publier sur la carte</h3>
+      <p>La publication remplace les données de la carte par les lignes valides du fichier.</p>
+      <div class="actions">
+        <button class="bouton principal" type="button" id="publier" disabled>Publier sur la carte</button>
+        <button class="bouton" type="button" id="annuler-publication">Revenir aux données de démonstration</button>
+      </div>
+      <div id="message-publication" role="status"></div>
+    </section>
+
+    <section class="en-production">
+      <h3>Et dans la version finale ?</h3>
+      <ol>
+        <li>Cette page est protégée par un identifiant : seules les personnes désignées par l'IFS peuvent publier.</li>
+        <li>Le bouton « Publier » dépose le fichier dans l'espace de stockage de la webmap, avec l'historique de chaque version.</li>
+        <li>Le même contrôle s'exécute automatiquement, puis la carte en ligne est mise à jour en deux minutes environ, y compris sur Sahelink et les sites des membres.</li>
+        <li>En cas d'erreur, la version précédente peut être restaurée en un clic.</li>
+      </ol>
+    </section>
+  </main>
+
+  <script src="assets/vendor/papaparse.min.js"></script>
+  <script src="assets/vendor/xlsx.full.min.js"></script>
+  <script src="assets/commun.js"></script>
+  <script src="assets/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+code,libelle,type,couleur
+agri,Agriculture et agroécologie,Traverse 50,#5E8F3A
+elev,Élevage et pastoralisme,Traverse 50,#A77B2E
+eau,Eau potable et assainissement,Traverse 50,#2E7DB5
+energie,Énergie et environnement,Traverse 50,#2F9C8C
+eco,Économie locale et emploi,Traverse 50,#B25B3A
+alim,Sécurité alimentaire et nutrition,Traverse 50,#D2A02C
+migr,Migrations et développement,Traverse 50,#7759A8
+jeun,Jeunesse et formation,Traverse 50,#C0507C
+risques,Risques naturels et inondations,Transversale,#1D4F7A
+gouv,Cohésion sociale et gouvernance territoriale,Transversale,#56636D
